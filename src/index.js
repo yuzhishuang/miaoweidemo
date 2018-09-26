@@ -124,6 +124,48 @@ let h4Style = {color: 'green'};
 //  	React element
 
 //  类组件才有内部状态 state
+//  setState
+//    更新this.state的值
+//    render方法再一次执行,生成新的virtual DOM结构
+//    比较新旧virtualDOM的结构，对变化的部分，在页面进行更新
+
+//  state的其他特性
+//    什么是内部状态
+//    合并更新
+//    异步更新
+//    语法
+//      不止可以传入一个对象还可以传入一个回调函数
+
+class MagicNumber extends React.Component {
+	constructor(props) {
+		super();
+		this.state = {
+			number: Math.random(),
+			name: props.name,
+		}
+	}
+	
+	render() {
+		let {number, name} = this.state;
+		return(
+			<div>
+				<h2>{name}</h2>
+				<p>{number}!!!</p>
+				<button onClick={()=>{
+					this.setState({
+						number: 11
+					})
+					this.setState((prevState, props) => {
+						return {
+							name: "Mike",
+							number: prevState.number == 11 ? 666 : 888,
+						}
+					})
+				}}>change number</button>
+			</div>
+		)
+	}
+}
 
 ReactDOM.render(
 	<div className="test" id="demo">
@@ -153,6 +195,10 @@ ReactDOM.render(
 		<Man hand={300} peopleName="Floke">
 			<div>yzschildren</div>
 		</Man>
+		<MagicNumber name="m1"></MagicNumber>
+		<MagicNumber name="m2"></MagicNumber>
+		<MagicNumber name="m3"></MagicNumber>
+		<MagicNumber name="m4"></MagicNumber>
 	</div>,
 	document.getElementById('root')
 )
