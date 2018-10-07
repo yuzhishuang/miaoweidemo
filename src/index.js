@@ -136,6 +136,33 @@ let h4Style = {color: 'green'};
 //    语法
 //      不止可以传入一个对象还可以传入一个回调函数
 
+//  事件系统
+//    合成事件对象
+//    支持的事件
+//    this指向
+//      行内绑定
+//      行内使用箭头函数
+//      在constructor中对事件的函数绑定this
+//      类属性语法
+
+//  声明周期
+//  Mounting装载
+//    constructor
+//	  static getDerivedStateFromProps(prop, state)
+//    render()
+//    componentDidMount()
+
+//  Update更新
+//	static getDerivedStateFromProps(prop, state)
+//  shouldComponentUpdate(nextProps, nextState)
+//  render
+//  getSnapshotBeforeUpdate(prevProp, prevState)
+//  componentDidUpdate()
+
+//  Unmounting卸载
+//    componentWillUnmount()
+
+
 class MagicNumber extends React.Component {
 	constructor(props) {
 		super();
@@ -143,25 +170,56 @@ class MagicNumber extends React.Component {
 			number: Math.random(),
 			name: props.name,
 		}
+		//  this.handleButtonClick = this.handleButtonClick.bind(this);
+		console.log('constructor');		
+	}
+	
+	/* handleButtonClick(event) {
+		event.stopPropagation();
+		this.setState({
+			number: 11
+		})
+		this.setState((prevState, props) => {
+			return {
+				name: "Mike",
+				number: prevState.number === 11 ? 666 : 888,
+			}
+		})
+	} */
+	
+	static getDerivedStateFromProps(prop, state) {
+		console.log('getDerivedStateFromProps');
+		return null;
+	}
+	
+	componentDidMount() {
+		console.log('组件装载完成');
+	}
+	
+	handleButtonClick = (event) => {
+		event.stopPropagation();
+		this.setState({
+			number: 11
+		})
+		this.setState((prevState, props) => {
+			return {
+				name: "Mike",
+				number: prevState.number === 11 ? 666 : 888,
+			}
+		})
 	}
 	
 	render() {
 		let {number, name} = this.state;
+		console.log('render');
 		return(
-			<div>
+			<div onClick={(event) => {
+				console.log(event.currentTarget);
+				console.log(event.target);
+			}}>
 				<h2>{name}</h2>
 				<p>{number}!!!</p>
-				<button onClick={()=>{
-					this.setState({
-						number: 11
-					})
-					this.setState((prevState, props) => {
-						return {
-							name: "Mike",
-							number: prevState.number == 11 ? 666 : 888,
-						}
-					})
-				}}>change number</button>
+				<button onClick={this.handleButtonClick}>change number</button>
 			</div>
 		)
 	}
