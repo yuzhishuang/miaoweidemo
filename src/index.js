@@ -149,8 +149,10 @@ let h4Style = {color: 'green'};
 //  Mounting装载
 //    constructor
 //	  static getDerivedStateFromProps(prop, state)
+//      在render之前，给你一次改变state的机会，不改变就返回null
 //    render()
 //    componentDidMount()
+//      获取真实的DOM元素
 
 //  Update更新
 //	static getDerivedStateFromProps(prop, state)
@@ -170,8 +172,7 @@ class MagicNumber extends React.Component {
 			number: Math.random(),
 			name: props.name,
 		}
-		//  this.handleButtonClick = this.handleButtonClick.bind(this);
-		console.log('constructor');		
+		//  this.handleButtonClick = this.handleButtonClick.bind(this);	
 	}
 	
 	/* handleButtonClick(event) {
@@ -188,13 +189,17 @@ class MagicNumber extends React.Component {
 	} */
 	
 	static getDerivedStateFromProps(prop, state) {
-		console.log('getDerivedStateFromProps');
-		return null;
+		//  console.log('getDerivedStateFromProps');
+		return null; 
+		/* return {
+			name: prop.name === state.name ? prop.name + 'OK' : prop.name + 'Fal'
+		} */
 	}
 	
-	componentDidMount() {
+	/* componentDidMount() {
 		console.log('组件装载完成');
-	}
+		console.log(document.getElementById('outDIV'))
+	} */
 	
 	handleButtonClick = (event) => {
 		event.stopPropagation();
@@ -211,23 +216,45 @@ class MagicNumber extends React.Component {
 	
 	render() {
 		let {number, name} = this.state;
-		console.log('render');
 		return(
-			<div onClick={(event) => {
-				console.log(event.currentTarget);
-				console.log(event.target);
+			<div id="outDIV" onClick={(event) => {
+				/* console.log(event.currentTarget);
+				console.log(event.target); */
 			}}>
 				<h2>{name}</h2>
 				<p>{number}!!!</p>
+				------
+				<Sun num={number} />
 				<button onClick={this.handleButtonClick}>change number</button>
 			</div>
 		)
 	}
 }
 
+class Sun extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			num: props.num
+		}
+	}
+	
+	static getDerivedStateFromProps(prop, state) {
+		return {
+			num: prop.num
+		}
+	}
+	
+	render() {
+		return (
+			<div>{this.state.num}</div>
+		)
+	}
+}
+
 ReactDOM.render(
 	<div className="test" id="demo">
-		<People name="Lily" renderProps={['aaa', 'bbb', 'ccc', <span key={12}>下班了</span>]}></People>
+		/* <People name="Lily" renderProps={['aaa', 'bbb', 'ccc', <span key={12}>下班了</span>]}></People>
 		你好，React!--来自CAO杨
         <h5>{`${s1} ${s2}`}</h5>
 		<h4 style={h4Style}>{sum(1, 4)}</h4>
@@ -255,7 +282,7 @@ ReactDOM.render(
 		</Man>
 		<MagicNumber name="m1"></MagicNumber>
 		<MagicNumber name="m2"></MagicNumber>
-		<MagicNumber name="m3"></MagicNumber>
+		<MagicNumber name="m3"></MagicNumber> */
 		<MagicNumber name="m4"></MagicNumber>
 	</div>,
 	document.getElementById('root')
