@@ -145,24 +145,50 @@ let h4Style = {color: 'green'};
 //      在constructor中对事件的函数绑定this
 //      类属性语法
 
+//  只有类组件才有生命周期，函数式组件没有声明周期
+
 //  声明周期
 //  Mounting装载
-//    constructor
+//    constructor  执行一次
 //	  static getDerivedStateFromProps(prop, state)
 //      在render之前，给你一次改变state的机会，不改变就返回null
 //    render()
-//    componentDidMount()
+//    componentDidMount()  执行一次
 //      获取真实的DOM元素
 
 //  Update更新
+//  父组件更新，（已挂载）子组件也会随着更新
 //	static getDerivedStateFromProps(prop, state)
 //  shouldComponentUpdate(nextProps, nextState)
+//    用于优化性能
+//    返回一个bool值
+//      true:子组件进行正常的更新流程
+//      false:后面的生命周期函数不会执行，视图不会更新
 //  render
 //  getSnapshotBeforeUpdate(prevProp, prevState)
+//    它执行的时候，新的VirtualDOM已经计算出来了
+//    但是这个时候浏览器DOM元素还没有更新
 //  componentDidUpdate()
+//    更新已经完成的时候调用
+//      获取真实的DOM元素
 
 //  Unmounting卸载
 //    componentWillUnmount()
+//      只执行一次
+
+//  错误处理
+//    componentDidCatch(error, info)
+//      捕获子组件生命周期抛出的错误
+
+//  获取真实的DOM
+//  回调  ref={el=>this.outDIV = el}
+//  createRef  ref={this.outDIV}  this.outDIV = React.createRef();
+//  字符串(过时)
+
+//  组件受控
+//    组件状态的变化是否是react接管的
+
+//  基于回调的组件交流
 
 
 class MagicNumber extends React.Component {
@@ -171,8 +197,13 @@ class MagicNumber extends React.Component {
 		this.state = {
 			number: Math.random(),
 			name: props.name,
+            hasError: false,
+            inputVal: '',
+            msg: '323',
+            inputComponentVal: '',
 		}
-		//  this.handleButtonClick = this.handleButtonClick.bind(this);	
+		//  this.handleButtonClick = this.handleButtonClick.bind(this);
+        // this.outDIV = React.createRef();
 	}
 	
 	/* handleButtonClick(event) {
@@ -187,7 +218,13 @@ class MagicNumber extends React.Component {
 			}
 		})
 	} */
-	
+
+    componentDidCatch(error, info) {
+        this.setState({
+            hasError: true
+        })
+	}
+
 	static getDerivedStateFromProps(prop, state) {
 		//  console.log('getDerivedStateFromProps');
 		return null; 
@@ -202,28 +239,69 @@ class MagicNumber extends React.Component {
 	} */
 	
 	handleButtonClick = (event) => {
+	    console.log(this.outDIV);
 		event.stopPropagation();
 		this.setState({
-			number: 11
+			name: this.input.value
 		})
 		this.setState((prevState, props) => {
 			return {
-				name: "Mike",
-				number: prevState.number === 11 ? 666 : 888,
+				// name: "Mike",
+				// number: prevState.number === 11 ? 666 : 888,
+				number: Math.random(),
 			}
 		})
 	}
+
+	handleInputChange = (event) => {
+	    console.log('输入框的值' + event.target.value);
+        let value = event.target.value;
+        this.setState({
+            inputVal: value
+        })
+    }
+
+	componentDidMount() {
+	    console.log(this.refs.outDIV);
+    }
+
+    changeMsg = (val) => {
+	    this.setState({
+            msg: val
+        })
+    }
+
+    changeVal = (val) => {
+	    this.setState({
+            inputComponentVal: val
+        })
+    }
+
 	
 	render() {
-		let {number, name} = this.state;
+		let {number, name, hasError, inputVal, msg} = this.state;
 		return(
-			<div id="outDIV" onClick={(event) => {
+			<div id="outDIV" ref="outDIV" onClick={(event) => {
 				/* console.log(event.currentTarget);
 				console.log(event.target); */
 			}}>
-				<h2>{name}</h2>
+                <input
+                    type="text"
+                    value={inputVal}
+                    ref={el=>this.input=el}
+                    onChange={this.handleInputChange}
+                />
+				<h2>{inputVal}</h2>
 				<p>{number}!!!</p>
-				------
+                <p>-------------------</p>
+                <Receive msg={msg}></Receive>
+                <p>-------------------</p>
+                <Input value={this.state.inputComponentVal} changeValue={this.changeVal}/>
+                <p>-------------------</p>
+                <Send changeMsg = {this.changeMsg}></Send>
+                <p>-------------------</p>
+				{/*{number > 0.5 && <Sun num={number} /> }*/}
+                {/*{hasError ? (<p>SUN 崩溃了</p>) : (<Sun num={number} />)}*/}
 				<Sun num={number} />
 				<button onClick={this.handleButtonClick}>change number</button>
 			</div>
@@ -244,17 +322,64 @@ class Sun extends React.Component {
 			num: prop.num
 		}
 	}
+
+    shouldComponentUpdate(nextProps, nextState) {
+		console.log(nextProps, nextState, this.state.num,nextState.num === this.state.num );
+		return !(nextState.num === this.state.num);
+	}
+
+    getSnapshotBeforeUpdate(prevProp, prevState) {
+		return 'kkk';
+	}
+
+    componentDidUpdate(p, s, shot) {
+		console.log(shot, 'Sun 更新');
+	}
+
+	componentDidMount() {
+		console.log('Sun 创建');
+	}
+
+	componentWillUnmount() {
+		console.log('Sun卸载');
+	}
 	
 	render() {
+		console.log('render');
+		// if (this.props.num > 0.5) throw Error('抛出异常');
 		return (
 			<div>{this.state.num}</div>
 		)
 	}
 }
 
+function Send(props) {
+    return (
+        <div>
+            <h2>发送消息</h2>
+            <button onClick={()=>{props.changeMsg(Math.random())}}>发送</button>
+        </div>
+    )
+}
+
+function Receive(props) {
+    return (
+        <div>
+            <h2>接收</h2>
+            <p>{props.msg}</p>
+        </div>
+    )
+}
+
+function Input(props) {
+    return (
+        <input type="text" value={props.value}/>
+    )
+}
+
 ReactDOM.render(
 	<div className="test" id="demo">
-		/* <People name="Lily" renderProps={['aaa', 'bbb', 'ccc', <span key={12}>下班了</span>]}></People>
+        {/* <People name="Lily" renderProps={['aaa', 'bbb', 'ccc', <span key={12}>下班了</span>]}></People>
 		你好，React!--来自CAO杨
         <h5>{`${s1} ${s2}`}</h5>
 		<h4 style={h4Style}>{sum(1, 4)}</h4>
@@ -282,7 +407,7 @@ ReactDOM.render(
 		</Man>
 		<MagicNumber name="m1"></MagicNumber>
 		<MagicNumber name="m2"></MagicNumber>
-		<MagicNumber name="m3"></MagicNumber> */
+		<MagicNumber name="m3"></MagicNumber> */}
 		<MagicNumber name="m4"></MagicNumber>
 	</div>,
 	document.getElementById('root')
