@@ -200,7 +200,6 @@ class MagicNumber extends React.Component {
             hasError: false,
             inputVal: '',
             msg: '323',
-            inputComponentVal: '',
 		}
 		//  this.handleButtonClick = this.handleButtonClick.bind(this);
         // this.outDIV = React.createRef();
@@ -239,7 +238,6 @@ class MagicNumber extends React.Component {
 	} */
 	
 	handleButtonClick = (event) => {
-	    console.log(this.outDIV);
 		event.stopPropagation();
 		this.setState({
 			name: this.input.value
@@ -262,18 +260,13 @@ class MagicNumber extends React.Component {
     }
 
 	componentDidMount() {
-	    console.log(this.refs.outDIV);
+	    //  console.log(this.refs.outDIV);
     }
 
-    changeMsg = (val) => {
+    changeMsg = () => {
+		console.log('input的值', this.sunInput.value)
 	    this.setState({
-            msg: val
-        })
-    }
-
-    changeVal = (val) => {
-	    this.setState({
-            inputComponentVal: val
+            msg: this.sunInput.value
         })
     }
 
@@ -296,7 +289,7 @@ class MagicNumber extends React.Component {
                 <p>-------------------</p>
                 <Receive msg={msg}></Receive>
                 <p>-------------------</p>
-                <Input value={this.state.inputComponentVal} changeValue={this.changeVal}/>
+                <Input getInput={el=>this.sunInput = el}/>
                 <p>-------------------</p>
                 <Send changeMsg = {this.changeMsg}></Send>
                 <p>-------------------</p>
@@ -357,7 +350,7 @@ function Send(props) {
     return (
         <div>
             <h2>发送消息</h2>
-            <button onClick={()=>{props.changeMsg(Math.random())}}>发送</button>
+            <button onClick={()=>{props.changeMsg()}}>发送</button>
         </div>
     )
 }
@@ -371,9 +364,9 @@ function Receive(props) {
     )
 }
 
-function Input(props) {
+function Input({getInput}) {
     return (
-        <input type="text" value={props.value}/>
+        <input type="text" ref={getInput}/>
     )
 }
 
