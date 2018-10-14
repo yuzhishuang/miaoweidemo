@@ -4,6 +4,9 @@ import ReactDOM from 'react-dom';
 import People from './components/People';
 import Man from './components/Man';
 
+import Todo from './components/todo';
+import Footer from './components/footer'
+
 import './main.css'
 
 //  把你写的结构通过js渲染到界面上
