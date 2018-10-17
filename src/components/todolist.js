@@ -29,7 +29,8 @@ export default class extends Component {
 			todoList: [
 			{
 				id: Math.random(),
-				content: value
+				content: value,
+				hasCompleted: false,
 			},
 				...todoList
 			]
@@ -45,7 +46,44 @@ export default class extends Component {
 		todoList = todoList.filter(elt => {
 			return elt.id!==id;
 		});
-		console.log(todoList);
+		this.setState({
+			todoList
+		})
+	}
+	
+	toggleTodo = (id) => {
+		let {todoList} = this.state;
+		
+		todoList = todoList.map(elt => {
+			if (elt.id == id) {
+				elt.hasCompleted = !elt.hasCompleted
+			}
+			return elt;
+		});
+		this.setState({
+			todoList
+		})
+	}
+	
+	toggleAll = (ev) => {
+		let {todoList} = this.state;
+		
+		todoList = todoList.map(elt => {
+			elt.hasCompleted = ev.target.checked; 
+			return elt;
+		});
+		this.setState({
+			todoList
+		})
+	}
+	
+	alterTodoContent = (id, content) => {
+		let {todoList} = this.state;
+		
+		todoList = todoList.map(elt => {
+			if (elt.id === id) elt.content = content; 
+			return elt;
+		});
 		this.setState({
 			todoList
 		})
@@ -53,13 +91,17 @@ export default class extends Component {
 	
 	render() {
 		let {todoList} = this.state;
+		let activeTodo = todoList.find(elt=>elt.hasCompleted===false)
 		let todos = todoList.map((elt) =>{
 			return (
 				<Todo key={elt.id}
 					{...{
 						id: elt.id,
 						content: elt.content,
-						deleteTodo: this.deleteTodo
+						deleteTodo: this.deleteTodo,
+						hasCompleted: elt.hasCompleted,
+						toggleTodo: this.toggleTodo,
+						alterTodoContent: this.alterTodoContent
 					}}
 					
 				/>
@@ -80,7 +122,12 @@ export default class extends Component {
 				</header>
 				<section className="main">
 					{/*全选按钮*/}
-					<input type="checkbox" className="toggle-all" />
+					<input 
+						type="checkbox" 
+						className="toggle-all"
+						checked={!activeTodo && todoList.length>0}
+						onChange={this.toggleAll}
+					/>
 					<ul className="todo-list">
 						{todos}
 					</ul>
