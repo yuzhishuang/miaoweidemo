@@ -29,10 +29,12 @@ export default class extends Component {
 		} else {
 			this.props.deleteTodo(id);
 		}
+		input.value = '';
 		
 	}
 	
 	onBlur = () => {
+		if (!this.state.inEdit) return;
 		this.setState({
 			inEdit: false
 		})
