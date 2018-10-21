@@ -2,3 +2,7 @@
     font-weight: bold;
     color: #f0f;
 }
+.selected {
+	color: red;
+	font-weight: bold;
+}

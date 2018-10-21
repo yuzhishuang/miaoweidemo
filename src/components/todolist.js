@@ -10,7 +10,8 @@ export default class extends Component {
 		super(props);
 		
 		this.state = {
-			todoList: []
+			todoList: [],
+			view: 'all'
 		};
 		
 		this.todoInput = createRef();
@@ -89,9 +90,25 @@ export default class extends Component {
 		})
 	}
 	
-	render() {
+	clearCompleted = () => {
 		let {todoList} = this.state;
+		
+		todoList = todoList.filter(elt => {
+			return !elt.hasCompleted;
+		})
+		
+		this.setState({
+			todoList
+		})
+		
+	}
+	
+	render() {
+		let {todoList, view} = this.state;
 		let activeTodo = todoList.find(elt=>elt.hasCompleted===false)
+		
+		let completedTodo = todoList.find(elt=>elt.hasCompleted)
+		
 		let todos = todoList.map((elt) =>{
 			return (
 				<Todo key={elt.id}
@@ -120,18 +137,29 @@ export default class extends Component {
 						onKeyDown={this.addTodo}
 					/>
 				</header>
-				<section className="main">
-					{/*全选按钮*/}
-					<input 
-						type="checkbox" 
-						className="toggle-all"
-						checked={!activeTodo && todoList.length>0}
-						onChange={this.toggleAll}
-					/>
-					<ul className="todo-list">
-						{todos}
-					</ul>
-				</section>
+				{todoList.length>0 && (
+					<Fragment>
+						<section className="main">
+							{/*全选按钮*/}
+							<input 
+								type="checkbox" 
+								className="toggle-all"
+								checked={!activeTodo && todoList.length>0}
+								onChange={this.toggleAll}
+							/>
+							<ul className="todo-list">
+								{todos}
+							</ul>
+						</section>
+						<Footer
+						{...{
+							clearCompleted: this.clearCompleted,
+							showClearButton: completedTodo && todoList.length > 0,
+							view
+						}}
+						></Footer>
+					</Fragment>
+				)}
 			</div>
 		);
 	}
