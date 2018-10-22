@@ -4,7 +4,9 @@ import ReactDOM from 'react-dom';
 import People from './components/People';
 import Man from './components/Man';
 
-import TodoList from './components/todolist'
+import TodoList from './components/todolist';
+
+import NewToDoList from './newTodo/NewToDoList';
 
 import './main.css'
 
@@ -280,6 +282,9 @@ class MagicNumber extends React.Component {
 				/* console.log(event.currentTarget);
 				console.log(event.target); */
 			}}>
+                <NewToDoList />
+
+				<h1>-----------------------------------</h1>
 			
 				<TodoList />
 				

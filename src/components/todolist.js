@@ -1,5 +1,5 @@
+//  Fragment包裹标签使用
 import React, {Fragment, Component, createRef} from 'react';
-import ReactDOM from 'react-dom';
 import Todo from './todo';
 import Footer from './footer';
 
@@ -17,9 +17,15 @@ export default class extends Component {
 		this.todoInput = createRef();
 		
 	}
+
+	changeView = (view) => {
+		this.setState({
+			view
+		})
+	}
 	
 	addTodo = (ev) => {
-		
+
 		let {value} = this.todoInput.current;
 		
 		if(ev.keyCode != 13 || !value.trim()) return;
@@ -105,11 +111,30 @@ export default class extends Component {
 	
 	render() {
 		let {todoList, view} = this.state;
-		let activeTodo = todoList.find(elt=>elt.hasCompleted===false)
+		let activeTodo = todoList.find(elt=>elt.hasCompleted===false);
 		
-		let completedTodo = todoList.find(elt=>elt.hasCompleted)
+		let completedTodo = todoList.find(elt=>elt.hasCompleted);
+
+		let leftItem = 0;
+
+		let showTodoData = todoList.filter(elt => {
+
+			if (!elt.hasCompleted) {
+				leftItem++;
+			}
+
+			switch (view) {
+				case 'active':
+					return !elt.hasCompleted;
+				case 'completed':
+					return elt.hasCompleted;
+                case 'all':
+				default:
+					return true;
+			}
+		})
 		
-		let todos = todoList.map((elt) =>{
+		let todos = showTodoData.map((elt) =>{
 			return (
 				<Todo key={elt.id}
 					{...{
@@ -155,7 +180,9 @@ export default class extends Component {
 						{...{
 							clearCompleted: this.clearCompleted,
 							showClearButton: completedTodo && todoList.length > 0,
-							view
+							view,
+                            changeView: this.changeView,
+                            leftItem
 						}}
 						></Footer>
 					</Fragment>
