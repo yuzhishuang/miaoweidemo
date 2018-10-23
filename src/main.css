@@ -6,3 +6,9 @@
 	color: red;
 	font-weight: bold;
 }
+.disNone {
+    display: none;
+}
+.completed {
+    text-decoration: line-through;
+}

@@ -74,7 +74,8 @@ export default class extends Component {
 						onChange={()=>toggleTodo(id)}
 					/>
 					{/*todo的内容*/}
-					<label 
+					<label
+						className={className}
 						ref="label"
 						onDoubleClick={this.onEdit}
 					>{content}</label>

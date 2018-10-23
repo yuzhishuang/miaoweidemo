@@ -1,6 +1,7 @@
 import React, {Fragment, Component, createRef} from 'react';
 
 import NewTodo from './NewTodo'
+import todo from "../components/todo";
 
 
 
@@ -12,10 +13,60 @@ export default class extends Component {
             todoList: [],
         }
 
+        this.todoInput = React.createRef();
+
     }
 
     addTodo = (ev) => {
-        console.log(ev.keyCode);
+        if (ev.keyCode !== 13) return;
+        let {value} = this.todoInput.current,
+            {todoList} = this.state;
+        this.setState({
+            todoList: [{
+                id: Math.random(),
+                content: value,
+                hasCompleted: false,
+            },
+                ...todoList
+            ]
+        }, () => {
+            this.todoInput.current.value = '';
+        })
+
+    }
+
+    deleteTodo = (ev) => {
+        let {todoList} = this.state;
+        todoList = todoList.filter((item) => {
+            return !(item.id === ev);
+        })
+        this.setState({
+            todoList
+        })
+    }
+
+    toggleTodo = (ev) => {
+        let {todoList} = this.state;
+        todoList = todoList.map((item) => {
+            if (item.id === ev) {
+                item.hasCompleted = !item.hasCompleted;
+            }
+            return item;
+        })
+        this.setState({
+            todoList
+        })
+    }
+
+    toggleAll = (ev) => {
+        let {todoList} = this.state;
+        todoList = todoList.map((item) => {
+            item.hasCompleted = ev.target.checked;
+            return item;
+        })
+        this.setState({
+            todoList
+        })
     }
 
     render() {
@@ -24,9 +75,20 @@ export default class extends Component {
 
         let todos = todoList.map((elt) => {
             return (
-                <NewTodo />
+                <NewTodo
+                    {...{
+                        key: elt.id,
+                        id: elt.id,
+                        content: elt.content,
+                        deleteTodo: this.deleteTodo,
+                        toggleTodo: this.toggleTodo,
+                        hasCompleted: elt.hasCompleted,
+                    }}
+                />
             )
         })
+
+        let activeTodo = todoList.find(ev=>ev.hasCompleted === false);
 
         return (
             <div>
@@ -39,14 +101,23 @@ export default class extends Component {
                     <input
                         type="text"
                         onKeyDown={this.addTodo}
+                        ref={this.todoInput}
                     />
                 </header>
                 <Fragment>
                     <section>
                         {/*全选按钮*/}
-                        <input type="checkbox"/>
+                        {
+                            todoList.length > 0 ? (
+                                <input
+                                    type="checkbox"
+                                    checked={!activeTodo}
+                                    onChange={this.toggleAll}
+                                />
+                            ) : null
+                        }
                         <ul>
-
+                            {todos}
                         </ul>
                     </section>
                 </Fragment>
